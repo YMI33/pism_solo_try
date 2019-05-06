@@ -10,15 +10,16 @@
 amp=20
 
 cdo -selname,ice_surface_temp ../pism_Greenland_5km_v1.1.nc  ../testfile/temp/temp0.nc
+cdo -selname,precipitation ../pism_Greenland_5km_v1.1.nc  ../testfile/temp/ptemp0.nc
 jloop=0
-for((iloop=1;iloop<=5;iloop++));
+for((iloop=1;iloop<=1000;iloop++));
 do
-    phase=`echo "scale=10;"$amp"*s(-"$iloop"/2000*3.1415)"|bc -l`
+    phase=`echo "scale=10;"$amp"*s(-"$iloop"/50*3.1415)"|bc -l`
     mon="-"$iloop
-    echo $jloop
-    echo $iloop
+    echo $phase
     cdo -mergetime -setyear,$mon -addc,$phase -selname,ice_surface_temp ../pism_Greenland_5km_v1.1.nc ../testfile/temp/temp$jloop.nc ../testfile/temp/temp$iloop.nc
-    rm ../testfile/temp/temp$jloop.nc
+    cdo -mergetime -setyear,$mon -selname,precipitation ../pism_Greenland_5km_v1.1.nc ../testfile/temp/ptemp$jloop.nc ../testfile/temp/ptemp$iloop.nc
+    rm ../testfile/temp/temp$jloop.nc ../testfile/temp/ptemp$jloop.nc
     let jloop=$jloop+1
 done
-cdo -merge -selname,precipitation ../pism_Greenland_5km_v1.1.nc ../testfile/temp/temp$jloop.nc ../testfile/sin_forcing_tem_pre.nc
+#cdo -merge ../testfile/temp/ptemp$jloop.nc ../testfile/temp/temp$jloop.nc ../testfile/sin_forcing_tem_pre.nc
